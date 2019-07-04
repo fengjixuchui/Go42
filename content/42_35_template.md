@@ -2,7 +2,7 @@
 
 作者：李骁
 
-Printf也可以做到输出格式化，当然，对于简单的例子来说足够了，但是我们有时候还是需要复杂的输出格式，甚至需要将格式化代码分离开来。这时，可以使用text/template和html/template。
+标准库fmt包中，Printf()等方法可以做到输出格式化，当然，对于简单的例子来说足够了，但是我们有时候还是需要复杂的输出格式，甚至需要将格式化代码分离开来。这时，可以使用text/template和html/template。
 
 Go 官方库提供了两个模板库： text/template 和 html/template 。这两个库类似，当需要输出html格式的代码时需要使用 html/template。
 
@@ -25,10 +25,11 @@ import (
 	"text/template"
 )
 
+// printf "%6.2f" 表示6位宽度2位精度
 const templ = ` 
 {{range .}}----------------------------------------
 Name:   {{.Name}}
-Price:  {{.Price | printf "%4s"}}
+Price:  {{.Price | printf "%6.2f"}}
 {{end}}`
 
 var report = template.Must(template.New("report").Parse(templ))
@@ -50,13 +51,13 @@ func main() {
 程序输出：
 ----------------------------------------
 Name:   《三国演义》
-Price:  %!s(float64=19.82)
+Price:   19.82
 ----------------------------------------
 Name:   《儒林外史》
-Price:  %!s(float64=99.09)
+Price:   99.09
 ----------------------------------------
 Name:   《史记》
-Price:  %!s(float64=26.89)
+Price:   26.89
 ```
 
 如果把模板的内容存在一个文本文件里tmp.txt：
@@ -64,7 +65,7 @@ Price:  %!s(float64=26.89)
 ```Go
 {{range .}}----------------------------------------
 Name:   {{.Name}}
-Price:  {{.Price | printf "%4s"}}
+Price:  {{.Price | printf "%6.2f"}}
 {{end}}
 ```
 我们可以这样处理：
@@ -98,37 +99,41 @@ func main() {
 
 ----------------------------------------
 Name:   《三国演义》
-Price:  %!s(float64=19.82)
+Price:   19.82
 ----------------------------------------
 Name:   《儒林外史》
-Price:  %!s(float64=99.09)
+Price:   99.09
 ----------------------------------------
 Name:   《史记》
-Price:  %!s(float64=26.89)
+Price:   26.89
 ```
 
+
+读取模板文件：
+
 ```Go
+// 建立模板，自动 new("name")
+// ParseFiles接受一个字符串，字符串的内容是一个模板文件的路径。
+// ParseGlob是用正则的方式匹配多个文件。
 Tmpl, err := template.ParseFiles("tmp.txt")  
-//建立模板，自动 new("name")
-```
 
-ParseFiles接受一个字符串，字符串的内容是一个模板文件的路径。
+// 假设一个目录里有a.txt b.txt c.txt的话，用ParseFiles需要写3行对应3个文件，
+// 如果有更多文件，可以用ParseGlob。
+// 写成template.ParseGlob("*.txt") 即可。
+Tmpl, err :=template.ParseGlob("*.txt")
 
-ParseGlob是用正则的方式匹配多个文件。
-
-假设一个目录里有a.txt b.txt c.txt的话，用ParseFiles需要写3行对应3个文件，如果有更多文件，可以用ParseGlob。
-
-写成template.ParseGlob("*.txt") 即可。
-```Go
+// 函数Must，它的作用是检测模板是否正确，例如大括号是否匹配，
+// 注释是否正确的关闭，变量是否正确的书写。
 var report = template.Must(template.ParseFiles("tmp.txt"))
 ```
-函数Must，它的作用是检测模板是否正确，例如大括号是否匹配，注释是否正确的关闭，变量是否正确的书写。
 
 ## 35.2 html/template
 
-和text、template类似，html/template主要在提供支持HTML的功能，所以基本使用上和上面差不多，我们来看下面代码：
+和text、template类似，html/template主要在提供支持HTML的功能，所以基本使用上和上面差不多，我们来看看Go语言利用html/template怎样实现一个动态页面：
 
-index.html：
+index.html.tmpl模板文件：
+
+index.html.tmpl：
 ```Go
 <!doctype html>
  <head>
@@ -150,41 +155,36 @@ main.go：
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"text/template"
 )
 
 func tHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("index.html")
+	t := template.Must(template.ParseFiles("index.html.tmpl"))
 	t.Execute(w, "Hello World!")
 }
 
 func main() {
 	http.HandleFunc("/", tHandler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", nil) // 启动web服务
 }
 ```
 
-运行程序，在浏览器打开：http://localhost:8080/    会看到页面显示Hello World!
+运行程序，在浏览器打开：http://localhost:8080/    我们可以看到浏览器页面显示Hello World !即使模板文件这时有修改，刷新浏览器后页面也即更新，这个过程并不需要重启web服务。
 
 ```Go
 func(t *Template) ParseFiles(filenames ...string) (*Template, error)
 func(t *Template) ParseGlob(patternstring) (*Template, error)
 ```
 
-从上面代码中我们可以看到，通过ParseFile加载了单个Html模板文件。但最终的页面很可能是多个模板文件的嵌套结果。
+从上面简单的代码中我们可以看到，通过ParseFile加载了单个Html模板文件，当然也可以使用ParseGlob加载多个模板文件。
 
-ParseFiles也支持加载多个模板文件，模板对象的名字则是第一个模板文件的文件名。
+如果最终的页面很可能是多个模板文件的嵌套结果，ParseFiles也支持加载多个模板文件，模板对象的名字则是第一个模板文件的文件名。
 
-ExecuteTemplate方法，用于执行指定名字的模板，下面我们根据一段代码来看看：
+ExecuteTemplate()执行模板渲染的方法，这个方法可用于执行指定名字的模板，因为如果多个模板文件加载情况下，我们需要指定特定的模板渲染执行。面我们根据一段代码来看看：
 
-Layout.html，注意在开头根据模板语法，定义了模板名字，define "layout"。
-在结尾处，通过 {{ template "index" }}
+Layout.html.tmpl模板：
 
-注意：通过将模板应用于一个数据结构(即该数据结构作为模板的参数)来执行，来获得输出。模板执行时会遍历结构并将指针表示为.(称之为dot)，指向运行过程中数据结构的当前位置的值。
-
-{{template "header" .}}  嵌套模板中，加入.dot 代表在该模板中也可以使用该数据结构，否则不能显示。
 ```Go
 {{ define "layout" }}
 
@@ -205,17 +205,29 @@ Layout.html，注意在开头根据模板语法，定义了模板名字，define
 
 {{ end }}
 ```
-```Go
-Index.html：
 
+注意模板文件开头根据模板语法，定义了模板名字，{{define "layout"}}。
+
+在模板layout中，通过 {{ template "index" }} 嵌入了模板index，也就是第二个模板文件index.html.tmpl，这个模板文件定义了模板名{{define "index"}}。
+
+注意：通过将模板应用于一个数据结构(即该数据结构作为模板的参数)来执行数据渲染而获得输出。模板执行时会遍历结构并将指针表示为.(称之为dot)，指向运行过程中数据结构的当前位置的值。
+
+{{template "header" .}}  嵌套模板中，加入.dot 代表在该模板中也可以使用该数据结构，否则不能显示。
+
+Index.html.tmpl模板：
+
+
+```Go
 {{ define "index" }}
 
 <div>
-<b>Index</b>
+<b>Go 语言值得你拥有！</b>
 </div>
 {{ end }}
 ```
-通过define定义模板，还可以通过template action引入模板，类似include。
+
+通过define定义模板名字，还可以通过template action引入模板，类似include。
+
 
 ```Go
 package main
@@ -226,7 +238,7 @@ import (
 )
 
 func tHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("layout.html", "index.html")
+	t, err := template.ParseFiles("layout.html.tmpl", "index.html.tmpl")
 	t.ExecuteTemplate(w, "layout", "Hello World!")
 }
 
@@ -238,11 +250,9 @@ func main() {
 运行程序，在浏览器打开：http://localhost:8080/ 
 
 Hello World!
-Index
+Go 语言值得你拥有！
 
-```Go
-有关ParseGlob方法，则是通过glob通配符加载模板，例如 t, _ := template.ParseGlob("*.html")
-```
+
 
 ## 35.3 模板语法
 
@@ -357,8 +367,15 @@ with结构中，在其它动作中使用定义的变量
 
 
 
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第三十四章 命令行flag包 ](https://github.com/ffhelicopter/Go42/blob/master/content/42_34_flag.md)
+
+[第三十六章 net/http包](https://github.com/ffhelicopter/Go42/blob/master/content/42_36_http.md)
+
+
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

@@ -20,7 +20,7 @@ var arrName = [5]string{3: "Chris", 4: "Ron"} //指定索引位置初始化
 // {"","","","Chris","Ron"}
 var arrCount = [4]int{500, 2: 100} //指定索引位置初始化 {500,0,100,0}
 var arrLazy = [...]int{5, 6, 7, 8, 22} //数组长度初始化时根据元素多少确定
-var arrPack = [...]int{10, 5: 100} //指定索引位置初始化，数组长度与此有关 {10,0,0,0,100}
+var arrPack = [...]int{10, 5: 100} //指定索引位置初始化，数组长度与此有关 {10,0,0,0,0,100}
 var arrRoom [20]int
 var arrBed = new([20]int)
 ```
@@ -115,9 +115,16 @@ println(arrRoom == arrBed) //true
 
 ```
 
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第十章 string](https://github.com/ffhelicopter/Go42/blob/master/content/42_10_string.md)
+
+[第十二章 切片(slice)](https://github.com/ffhelicopter/Go42/blob/master/content/42_12_slice.md)
+
+
 
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

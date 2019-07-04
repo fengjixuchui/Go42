@@ -4,7 +4,7 @@
 
 ## 10.1 字符串介绍
 
-Go 语言中可以使用反引号或者双引号来定义字符创。反引号表示原生的字符串，即不进行转义。
+Go 语言中可以使用反引号或者双引号来定义字符串。反引号表示原生的字符串，即不进行转义。
 
 1. 双引号：字符串使用双引号括起来，其中的相关的转义字符将被替换。例如：
 
@@ -124,7 +124,7 @@ s += "world!"
 fmt.Println(s) // 输出 “hello, world!”
 ```
 
-里面的字符串都是不可变的，每次运算都会产生一个新的字符串，所以会产生很多临时的无用的字符串，不仅没有用，还会给 gc 带来额外的负担，所以性能比较差。
+里面的字符串都是不可变的，每次运算都会产生一个新的字符串，所以会产生很多临时的无用的字符串，不仅没有用，还会给 GC 带来额外的负担，所以性能比较差。
 
 * fmt.Sprintf()
 
@@ -211,8 +211,17 @@ strings.Count(s, substr string) int
 strings.Contains(s, substr string) bool
 
 
+
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第九章 运算符](https://github.com/ffhelicopter/Go42/blob/master/content/42_09_operator.md)
+
+[第十一章 数组(Array)](https://github.com/ffhelicopter/Go42/blob/master/content/42_11_array.md)
+
+
+
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

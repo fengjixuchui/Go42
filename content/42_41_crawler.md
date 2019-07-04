@@ -2,9 +2,9 @@
 
 作者：李骁
 
-## 41.1 go-colly网络爬虫框架
+## 41.1 Colly网络爬虫框架
 
-go-colly是用Go实现的网络爬虫框架。go-colly快速优雅，在单核上每秒可以发起1K以上请求；以回调函数的形式提供了一组接口，可以实现任意类型的爬虫。
+Colly是用Go实现的网络爬虫框架。Colly快速优雅，在单核上每秒可以发起1K以上请求；以回调函数的形式提供了一组接口，可以实现任意类型的爬虫。
 
 Colly 特性：
 
@@ -134,7 +134,7 @@ func main() {
 
 上面代码在开始处对Colly做了简单的初始化，增加UserAgent和域名限制，其他的设置可根据实际情况来设置，Url过滤，抓取深度等等都可以在此设置，也可以后运行时在具体设置。
 
-该例只是简单说明了colly在爬虫抓取，调度管理方面的优势，对此如有兴趣可更深入了解。大家在深入学习Colly时，可自行选择更合适的URL。
+该例只是简单说明了Colly在爬虫抓取，调度管理方面的优势，对此如有兴趣可更深入了解。大家在深入学习Colly时，可自行选择更合适的URL。
 
 程序运行后，开始根据news.baidu.com抓取页面结果，通过OnHTML回调函数分析首页中的热点新闻标题及链接，并可不断地抓取更深层次的新链接进行访问，每个链接的访问结果我们可以通过OnHTML来进行分析，也可通过OnResponse来进行处理，例子中没有进一步展示深层链接的内容，有兴趣的朋友可以继续进一步研究。
 
@@ -148,7 +148,7 @@ func (c *Collector) OnHTML(goquerySelector string, f HTMLCallback)
 
 ## 41.2 goquery HTML解析
 
-colly框架可以快速发起请求，接收服务器响应。但如果我们需要分析返回的HTML代码，这时候仅仅使用colly就有点吃力。而goquery库是一个使用Go语言写成的HTML解析库，功能更加强大。
+Colly框架可以快速发起请求，接收服务器响应。但如果我们需要分析返回的HTML代码，这时候仅仅使用Colly就有点吃力。而goquery库是一个使用Go语言写成的HTML解析库，功能更加强大。
 
 goquery将jQuery的语法和特性引入进来，所以可以更灵活地选择采集内容的数据项，就像jQuery那样的方式来操作DOM文档，使用起来非常的简便。
 
@@ -198,7 +198,7 @@ import "github.com/PuerkitoBio/goquery"
 
 goquery的主要用法是选择器，需要借鉴jQuery的特性，多加练习就能很快掌握。限于篇幅，这里只能简单介绍了goquery的大概情况。
 
-goquery可以直接发送url请求，获得响应后得到HTML代码。但goquery主要擅长于HTML代码分析，而colly在爬虫抓取管理调度上有优势，所以下面以colly作为爬虫框架，goquery作为HTML分析器，看看怎么抓取并分析页面内容：
+goquery可以直接发送url请求，获得响应后得到HTML代码。但goquery主要擅长于HTML代码分析，而Colly在爬虫抓取管理调度上有优势，所以下面以Colly作为爬虫框架，goquery作为HTML分析器，看看怎么抓取并分析页面内容：
 
 ```Go
 package main
@@ -277,28 +277,25 @@ func main() {
 
 在goquery中，常用大概有以下选择器：
 
-HTML Element 元素的选择器
-ID 选择器
-Element ID 选择器 Find(element#id)
-Class选择器   Find(".class")
-属性选择器
+|选择器类型|说明|
+|:--|:--|
+|HTML Element |元素的选择器Find("a")|
+|Element ID 选择器| Find(element#id)|
+|Class选择器   |Find(".class")|
+|属性选择器| |
 
-选择器 	说明
-Find(“div[lang]“) 	筛选含有lang属性的div元素
 
-Find(“div[lang=zh]“) 	筛选lang属性为zh的div元素
 
-Find(“div[lang!=zh]“) 	筛选lang属性不等于zh的div元素
-
-Find(“div[lang¦=zh]“) 	筛选lang属性为zh或者zh-开头的div元素
-
-Find(“div[lang*=zh]“) 	筛选lang属性包含zh这个字符串的div元素
-
-Find(“div[lang~=zh]“) 	筛选lang属性包含zh这个单词的div元素，单词以空格分开的
-
-Find(“div[lang$=zh]“) 	筛选lang属性以zh结尾的div元素，区分大小写
-
-Find(“div[lang^=zh]“) 	筛选lang属性以zh开头的div元素，区分大小写
+|选择器 	|说明|
+|:--|:--|
+|Find(“div[lang]“) 	|筛选含有lang属性的div元素|
+|Find(“div[lang=zh]“) 	|筛选lang属性为zh的div元素|
+|Find(“div[lang!=zh]“) 	|筛选lang属性不等于zh的div元素|
+|Find(“div[lang¦=zh]“) 	|筛选lang属性为zh或者zh-开头的div元素|
+|Find(“div[lang*=zh]“) 	|筛选lang属性包含zh这个字符串的div元素|
+|Find(“div[lang~=zh]“) 	|筛选lang属性包含zh这个单词的div元素，单词以空格分开的|
+|Find(“div[lang$=zh]“) 	|筛选lang属性以zh结尾的div元素，区分大小写|
+|Find(“div[lang^=zh]“) 	|筛选lang属性以zh开头的div元素，区分大小写|
 
 
 parent>child选择器
@@ -313,8 +310,15 @@ prev~next选择器
 Colly + goquery 是抓取网络内容的利器，使用上极其方便。如今动态渲染的页面越来越多，爬虫们或多或少都需要用到headless browser来渲染待爬取的页面，这里推荐chromedp，开源网址：https://github.com/chromedp/chromedp
 
 
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第四十章 LevelDB与BoltDB](https://github.com/ffhelicopter/Go42/blob/master/content/42_40_kvdb.md)
+
+[第四十二章 WEB框架(Gin)](https://github.com/ffhelicopter/Go42/blob/master/content/42_42_gin.md)
+
+
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

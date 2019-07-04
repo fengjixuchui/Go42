@@ -126,7 +126,7 @@ Go 拥有以下复数类型：
 complex64 (32 位实数和虚数)<br>
 complex128 (64 位实数和虚数)<br>
 
-复数使用 re+imI 来表示，其中 re 代表实数部分，im 代表虚数部分，I 代表根号负 1。
+复数使用 re+imi 来表示，其中 re 代表实数部分，im 代表虚数部分，i 为虚数单位。
 示例：
 
 ```Go
@@ -142,8 +142,16 @@ c = complex(re, im)
 
 
 
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第一章 Go安装与运行](https://github.com/ffhelicopter/Go42/blob/master/content/42_01_install.md)
+
+[第三章 变量](https://github.com/ffhelicopter/Go42/blob/master/content/42_03_var.md)
+
+
+
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

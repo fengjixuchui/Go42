@@ -11,7 +11,7 @@ Go 提供了database/sql包用于对关系型数据库的访问，作为操作�
 
 需要注意的是，sql.DB表示操作数据库的抽象访问接口, 而非一个数据库连接对象;它可以根据driver打开关闭数据库连接，管理连接池。正在使用的连接被标记为繁忙，用完后回到连接池等待下次使用。所以，如果你没有把连接释放回连接池，会导致过多连接使系统资源耗尽。
 
-具体到某一类型的关系型数据库，需要导入对应的数据库驱动。下面以MySql8.0为例，来讲讲怎么在Go语言中调用。
+具体到某一类型的关系型数据库，需要导入对应的数据库驱动。下面以MySQL8.0为例，来讲讲怎么在Go语言中调用。
 
 首先，需要下载第三方包：
 
@@ -29,7 +29,7 @@ import (
 通常来说，不应该直接使用驱动所提供的方法，而是应该使用 sql.DB，因此在导入 mysql 驱动时，这里使用了匿名导入的方式(在包路径前添加 _)，当导入了一个数据库驱动后，此驱动会自行初始化并注册自己到Go的database/sql上下文中，因此我们就可以通过 database/sql 包提供的方法访问数据库了。
 
 
-## 39.2 Mysql数据库操作
+## 39.2 MySQL数据库操作
 
 我们先建立表结构：
 
@@ -53,7 +53,7 @@ CREATE TABLE t_article_cate (
 下面代码使用预编译的方式，来进行增删改查的操作，并通过事务来批量提交一批数据。
 
 在Go语言中对数据类型要求很严格，一般查询数据时先定义数据类型，但是查询数据库中的数据存在三种可能:
-存在值，存在零值，未赋值NULL 三种状态，因此可以将待查询的数据类型定义为sql.Nullxxx类型，可以通过判断Valid值来判断查询到的值是否为赋值状态还是未赋值NULL状态。如// sql.NullInt64 sql.NullString 
+存在值，存在零值，未赋值NULL 三种状态，因此可以将待查询的数据类型定义为sql.Nullxxx类型，可以通过判断Valid值来判断查询到的值是否为赋值状态还是未赋值NULL状态。如: sql.NullInt64 sql.NullString 
 
 ```Go
 package main
@@ -83,7 +83,7 @@ type Cate struct {
 
 func main() {
 	dbw := DbWorker{Dsn: "root:123456@tcp(localhost:3306)/mydb?charset=utf8mb4"}
-	// 支持下面几种DSN写法，具体看mysql服务端配置，常见为第2种
+	// 支持下面几种DSN写法，具体看MySQL服务端配置，常见为第2种
 	// user@unix(/path/to/socket)/dbname?charset=utf8
 	// user:password@tcp(localhost:5555)/dbname?charset=utf8
 	// user:password@/dbname
@@ -125,7 +125,7 @@ func (dbw *DbWorker) insertData() {
 	stmt,  _ := dbw.Db.Prepare(`INSERT INTO t_article_cate (cname, addtime, scope) VALUES (?, ?, ?)`)
 	defer stmt.Close()
 	
-	ret,  err := stmt.Exec("栏目1",  time.Now().Unix(),  10)
+	ret,  err := stmt.Exec("栏目1",  time.Now().UNIX(),  10)
 
 	// 通过返回的ret可以进一步查询本次插入数据影响的行数
 	// RowsAffected和最后插入的Id(如果数据库支持查询最后插入Id)
@@ -260,7 +260,7 @@ func (dbw *DbWorker) transaction() {
 
 	for i := 100; i < 110; i++ {
 		cname := strings.Join([]string{"栏目-",  string(i)},  "-")
-		_,  err = stmt.Exec(cname,  time.Now().Unix(),  i+20)
+		_,  err = stmt.Exec(cname,  time.Now().UNIX(),  i+20)
 		if err != nil {
 			fmt.Printf("insert data error: %v\n",  err)
 			return
@@ -276,8 +276,16 @@ func (dbw *DbWorker) transaction() {
 ```
 
 
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第三十八章 数据序列化](https://github.com/ffhelicopter/Go42/blob/master/content/42_38_json.md)
+
+[第四十章 LevelDB与BoltDB](https://github.com/ffhelicopter/Go42/blob/master/content/42_40_kvdb.md)
+
+
+
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

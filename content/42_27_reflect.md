@@ -4,7 +4,7 @@
 
 ## 27.1 反射(reflect)
 
-反射是应用程序检查其所拥有的结构，尤其是类型的一种能力；这是元编程的一种形式。每种语言的反射模型都不同，并且有些语言根本不支持反射。Go语言实现了反射，反射机制就是在运行时动态调用对象的方法和属性，标准库reflect提供了相关的功能。在reflect包中，通过reflect.TypeOf()，reflect.ValueOf()分别从类型、值的角度来描述一个Go对象。
+反射是应用程序检查其所拥有的结构，尤其是类型的一种能。每种语言的反射模型都不同，并且有些语言根本不支持反射。Go语言实现了反射，反射机制就是在运行时动态调用对象的方法和属性，即可从运行时态的示例对象反求其编码阶段的定义，标准库中reflect包提供了相关的功能。在reflect包中，通过reflect.TypeOf()，reflect.ValueOf()分别从类型、值的角度来描述一个Go对象。
 
 ```Go
 func TypeOf(i interface{}) Type
@@ -22,7 +22,7 @@ type Value struct
 
 value是实际变量值，type是实际变量的类型。两个简单的函数，reflect.TypeOf 和 reflect.ValueOf，返回被检查对象的类型和值。
 
-例如，x 被定义为：var x float64 = 3.4，那么 reflect.TypeOf(x) 返回 float64，reflect.ValueOf(x) 返回 <float64 Value>。实际上，反射是通过检查一个接口的值，变量首先被转换成空接口。这从下面两个函数签名能够很明显的看出来：
+例如，x 被定义为：var x float64 = 3.4，那么 reflect.TypeOf(x) 返回 float64，reflect.ValueOf(x) 返回 3.4。实际上，反射是通过检查一个接口的值，变量首先被转换成空接口。这从下面两个函数签名能够很明显的看出来：
 
 ```Go
 func TypeOf(i interface{}) Type
@@ -33,7 +33,7 @@ reflect.Type 和 reflect.Value 都有许多方法用于检查和操作它们。
 
 Type主要有：
 Kind() 将返回一个常量，表示具体类型的底层类型
-Elem()方法返回指针、数组、切片、map、通道的基类型，这个方法要慎用，如果用在其他类型上面会出现panic
+Elem()方法返回指针、数组、切片、字典、通道的基类型，这个方法要慎用，如果用在其他类型上面会出现panic
 
 Value主要有：
 Type() 将返回具体类型所对应的 reflect.Type（静态类型）
@@ -74,9 +74,9 @@ func main() {
 }
 ```
 
-在Go语言中，类型包括 static type和concrete type. 简单说 static type是你在编码是看见的类型(如int、string)，concrete type是实际的类型，runtime系统看见的类型。
+在Go语言中，类型包括 static type和concrete type. 简单说 static type是你在编码是看见的类型(如int、string)，concrete type是实际具体的类型，runtime系统看见的类型。
 
-Type()返回的是静态类型，而kind()返回的是concrete type。上面代码中，在int，数组以及结构体三种类型情况中，可以看到kind()，type()返回值的差异。
+Type()返回的是静态类型，而kind()返回的是具体类型。上面代码中，在int，数组以及结构体三种类型情况中，可以看到kind()，type()返回值的差异。
 
 
 **通过反射可以修改原对象**
@@ -127,7 +127,7 @@ func main() {
 }
 ```
 
-虽然反射可以越过Go语言的导出规则的限制读取结构体中未导出的成员，但不能修改这些未导出的成员。因为一个struct中只有被导出的字段才是settable的。
+虽然反射可以越过Go语言的导出规则的限制读取结构体中未导出的成员，但不能修改这些未导出的成员。因为一个结构体中只有被导出的字段才是可修改的。
 
 在结构体中有tag标签，通过反射可获取结构体成员变量的tag信息。
 
@@ -316,8 +316,19 @@ NumMethod          : 0
 
 ```
 
+细心的读者可能发现了上面代码中的一个有趣的问题，那就是structValue, &structValue的反射结果是不一样的，指针对象在这里有两个方法，而值对象只有一个方法，这是因为Method2()方法是指针方法，在值对象中是不能被反射到的。
+
+
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第二十六章 测试](https://github.com/ffhelicopter/Go42/blob/master/content/42_26_testing.md)
+
+[第二十八章 unsafe包](https://github.com/ffhelicopter/Go42/blob/master/content/42_28_unsafe.md)
+
+
+
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

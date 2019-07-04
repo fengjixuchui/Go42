@@ -3,7 +3,7 @@
 作者：李骁
 
 ## 8.1 项目结构
-Go的工程项目管理非常简单，使用目录结构和package名来确定工程结构和构建顺序。
+Go的工程项目管理非常简单，使用目录结构和包名来确定工程结构和构建顺序。
 
 环境变量GOPATH在项目管理中非常重要，想要构建一个项目，必须确保项目目录在GOPATH中。而GOPATH可以有多个项目用";"分隔。
 
@@ -15,9 +15,9 @@ Go 项目目录下一般有三个子目录：
 
 我们重点要关注的其实就是src文件夹中的目录结构。
 
-为了进行一个项目，我们会在GoPATH目录下的src目录中，新建立一个项目的主要目录，比如我写的一个WEB项目《使用gin快速搭建WEB站点以及提供RestFull接口》。
+为了进行一个项目，我们会在GOPATH目录下的src目录中，新建立一个项目的主要目录，比如我写的一个WEB项目《使用gin快速搭建WEB站点以及提供RESTful接口》。
 https://github.com/ffhelicopter/tmm
-项目主要目录“tmm”： $GoPATH/src/github.com/ffhelicopter/tmm
+项目主要目录“tmm”： GOPATH/src/github.com/ffhelicopter/tmm
 在这个目录(tmm)下面还有其他目录，分别放置了其他代码，大概结构如下：
 
 ```Go
@@ -41,12 +41,9 @@ main.go 文件中定义了package main 。同时也在文件中import了
 
 当我们运行go install main.go 会在GOPATH的bin 目录中生成可执行文件。
 
-## 8.2 使用 Godoc
+## 8.2 使用godoc
 
-在程序中我们一般都会注释，如果我们按照一定规则，Godoc 工具会收集这些注释并产生一个技术文档。
-
-Godoc工具在显示自定义包中的注释也有很好的效果：
-注释必须以 // 开始并无空行放在声明（包，类型，函数）前。Godoc 会为每个文件生成一系列的网页。
+在程序中我们一般都会注释，如果我们按照一定规则，godoc工具会收集这些注释并产生一个技术文档。
 
 ```Go
 // Copyright 2009 The Go Authors. All rights reserved.  
@@ -79,15 +76,10 @@ func NewWriter(w io.Writer) * Writer {
     return z
 }
 ```
-一般采用行注释，<b>每个// 后面采用一个空格隔开</b>。注意函数或方法的整体注释以函数名或方法名开始，空换行也用//注释。整个注释和函数签名之间不要空行。
 
->执行：
->
->在 doc_examples 目录下我们有 Go 文件，文件中有一些注释（文件需要未编译） 命令行下进入目录下并输入命令： Godoc -http=:6060 -goroot="."
+命令行下进入目录下并输入命令： godoc -http=:6060 -goroot="."
 
-（. 是指当前目录，-goroot 参数可以是 /path/to/my/package1 这样的形式指出 package1 在你源码中的位置或接受用冒号形式分隔的路径，无根目录的路径为相对于当前目录的相对路径）
-
-在浏览器打开地址：http://localhost:6060
+然后在浏览器打开地址：http://localhost:6060
 
 然后你会看到本地的 Godoc 页面，从左到右一次显示出目录中的包。
 ![godoc.png](https://github.com/ffhelicopter/Go42/blob/master/content/img/godoc.png)
@@ -95,29 +87,17 @@ func NewWriter(w io.Writer) * Writer {
 
 ## 8.3 Go程序的编译
 
-如果想要构建一个程序，则包和包内的文件都必须以正确的顺序进行编译。包的依赖关系决定了其构建顺序。
-
-属于同一个包的源文件必须全部被一起编译，一个包即是编译时的一个单元，因此根据惯例，每个目录都只包含一个包。
-
-如果对一个包进行更改或重新编译，所有引用了这个包的客户端程序都必须全部重新编译。
-Go 中的包模型采用了显式依赖关系的机制来达到快速编译的目的，编译器会从后缀名为 .go 的对象文件（需要且只需要这个文件）中提取传递依赖类型的信息。
-
-如果 A.go 依赖 B.go，而 B.go 又依赖 C.go：
-
->编译 C.go，B.go，然后是 A.go。<br>
->为了编译 A.go，编译器读取的是 B.go 而不是 C.go。
-
-这种机制对于编译大型的项目时可以显著地提升编译速度，每一段代码只会被编译一次。
-
 在Go语言中，和编译有关的命令主要是go run ,go build , go install这三个命令。
 
 go run只能作用于main包文件，先运行compile 命令编译生成.a文件，然后 link 生成最终可执行文件并运行程序，这过程的产生的是临时文件，在go run 退出前会删除这些临时文件（含.a文件和可执行文件）。最后直接在命令行输出程序执行结果。go run 命令在第二次执行的时候，如果发现导入的代码包没有发生变化，那么 go run 不会再次编译这个导入的代码包，直接进行链接生成最终可执行文件并运行程序。
 
-go install用于编译并安装指定的代码包及它们的依赖包，并且将编译后生成的可执行文件放到 bin 目录下（$GOPATH/bin），编译后的包文件放到当前工作区的 pkg 的平台相关目录下。
+go install用于编译并安装指定的代码包及它们的依赖包，并且将编译后生成的可执行文件放到 bin 目录下（GOPATH/bin），编译后的包文件放到当前工作区的 pkg 的平台相关目录下。
 
 go build用于编译指定的代码包以及它们的依赖包。如果用来编译非main包的源码，则只做检查性的编译，而不会输出任何结果文件。如果是一个可执行程序的源码（即是 main 包），这个过程与go run 大体相同，除了会在当前目录生成一个可执行文件外。
 
 使用go build时有一个地方需要注意，对外发布编译文件如果不希望被人看到源代码，请使用go build -ldflags 命令，设置编译参数-ldflags "-w -s" 再编译后发布。避免使用gdb来调试而清楚看到源代码。
+
+![ch5.png](https://github.com/ffhelicopter/Go42/blob/master/content/img/ch5.png)
 
 ## 8.4 Go modules 包依赖管理
 
@@ -128,9 +108,9 @@ Go 1.11 新增了对模块的支持，希望借此解决“包依赖管理”。
 * GO111MODULE=on
     模块支持，go 会忽略 GOPATH 和 vendor 文件夹，只根据 go.mod下载依赖。
 * GO111MODULE=auto
-在 $GOPATH/src外面且根目录有 go.mod文件时，开启模块支持。
+在 GOPATH/src外面且根目录有 go.mod文件时，开启模块支持。
 
-在使用模块的时候， GOPATH是无意义的，不过它还是会把下载的依赖储存在 $GOPATH/pkg/mod 中。
+在使用模块的时候， GOPATH是无意义的，不过它还是会把下载的依赖储存在 GOPATH/pkg/mod 中。
  
 运行命令，go help mod ，我们可以看到mod的操作子命令，主要是init、 edit、 tidy。
 
@@ -287,10 +267,20 @@ github.com/temoto/robotstxt v0.0.0-20180810133444-97ee4a9ee6ea h1:hH8P1IiDpzRU6Z
 github.com/temoto/robotstxt v0.0.0-20180810133444-97ee4a9ee6ea/go.mod h1:aOux3gHPCftJ3KHq6Pz/AlDjYJ7Y+yKfm1gU/3B0u04=
 ```
 
-打开目录$GPATH/pkg/mod，我们可以看到这个项目下的依赖包都下载过来了。
+打开目录GOPATH/pkg/mod，我们可以看到这个项目下的依赖包都下载过来了。
+
+
+
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第七章 代码结构化](https://github.com/ffhelicopter/Go42/blob/master/content/42_07_package.md)
+
+[第九章 运算符](https://github.com/ffhelicopter/Go42/blob/master/content/42_09_operator.md)
+
+
 
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

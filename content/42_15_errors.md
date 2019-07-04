@@ -26,61 +26,66 @@ if f < 0 {
 
 ## 15.2 Panic
 
-在Go语言中 panic 是一个内置函数，用来表示非常严重的不可恢复的错误。必须要先声明defer，否则不能捕获到panic异常。普通函数在执行的时候发生panic了，则开始运行defer（如有），defer处理完再返回。
+在Go语言中 panic() 是一个内置函数，用来表示非常严重的不可恢复的错误。必须要先声明defer，否则不能捕获到异常。普通函数在执行的时候发生了异常，则开始运行defer（如有），defer处理完再返回。
 
-在多层嵌套的函数调用中调用 panic，可以马上中止当前函数的执行，所有的 defer 语句都会保证执行并把控制权交还给接收到 panic 的函数调用者。这样向上冒泡直到最顶层，并执行（每层的） defer，在栈顶处程序崩溃，并在命令行中用传给 panic 的值报告错误情况：这个终止过程就是 panicking。
+在多层嵌套的函数调用中调用 panic()，可以马上中止当前函数的执行，所有的 defer 语句都会保证执行并把控制权交还给接收到异常的函数调用者。这样向上冒泡直到最顶层，并执行（每层的） defer，在栈顶处程序崩溃，并在命令行中用传给异常的值报告错误情况：这个终止过程就是 panicking。
 
-标准库中有许多包含 Must 前缀的函数，像 regexp.MustComplie 和 template.Must；当正则表达式或模板中转入的转换字符串导致错误时，这些函数会 panic。
-
-不能随意地用 panic 中止程序，必须尽力补救错误让程序能继续执行。
+一般不要随意用 panic() 中止程序，必须尽力补救错误让程序能继续执行。
 
 自定义包中的错误处理和 panicking，这是所有自定义包实现者应该遵守的最佳实践：
 
-1）在包内部，总是应该从 panic 中 recover：不允许显式的超出包范围的 panic()
+1）在包内部，总是应该从异常中 recover：不允许显式的超出包范围的 panic()
 
-2）向包的调用者返回错误值（而不是 panic）。
+2）向包的调用者返回错误值。
 
-recover() 的调用仅当它在 defer 函数中被直接调用时才有效。
+recover() 函数的调用仅当它在 defer 函数中被直接调用时才有效。
 
-下面主函数recover 了panic：
+下面主函数捕获了异常：
 
 ```Go
-func Parse(input string) (numbers []int, err error) {
-    defer func() {
-        if r := recover(); r != nil {
-            var ok bool
-            err, ok = r.(error)
-            if !ok {
-                err = fmt.Errorf("pkg: %v", r)
-            }
-        }
-    }()
+package main
 
-    fields := strings.Fields(input)
-    numbers = fields2numbers(fields)
-    return
+import (
+	"fmt"
+)
+
+func div(a, b int) {
+
+	defer func() {
+
+		if r := recover(); r != nil {
+			fmt.Printf("捕获到异常：%s\n", r)
+		}
+	}()
+
+	if b < 0 {
+
+		panic("除数需要大于0")
+	}
+
+	fmt.Println("余数为：", a/b)
+
 }
 
-func fields2numbers(fields []string) (numbers []int) {
-    if len(fields) == 0 {
-        panic("no words to parse")
-    }
-    for idx, field := range fields {
-        num, err := strconv.Atoi(field)
-        if err != nil {
-            panic(&ParseError{idx, field, err})
-        }
-        numbers = append(numbers, num)
-    }
-    return
+func main() {
+	// 捕捉内部的异常
+	div(10, 0)
+
+	// 捕捉主动的异常
+	div(10, -1)
 }
+
+程序输出：
+
+捕获到异常：runtime error: integer divide by zero
+捕获到异常：除数需要大于0
 ```
 
-## 15.3 Recover：从 panic 中恢复
+## 15.3 Recover：从异常中恢复
 
-正如名字一样，这个（recover）内建函数被用于从 panic 或 错误场景中恢复：让程序可以从 panicking 重新获得控制权，停止终止过程进而恢复正常执行。
-recover 只能在 defer 修饰的函数中使用：用于取得 panic 调用中传递过来的错误值，如果是正常执行，调用 recover 会返回 nil，且没有其它效果。
-总结：panic 会导致栈被展开直到 defer 修饰的 recover() 被调用或者程序中止。
+recover() 这个内建函数被用于从异常或错误场景中恢复：让程序可以从 panicking 重新获得控制权，停止终止过程进而恢复正常执行。
+recover() 只能在 defer 修饰的函数中使用：用于取得异常调用中传递过来的错误值，如果是正常执行，调用 recover() 会返回 nil，且没有其它效果。
+总结：异常会导致栈被展开直到 defer 修饰的 recover() 被调用或者程序中止。
 
 ```Go
 func protect(g func()) {
@@ -173,14 +178,14 @@ func main() {
 func fun1() (i int) {
 	defer func() {
 		i++
-		fmt.Println("defer2:", i) // 打印结果为 defer: 2
+		fmt.Println("defer2:", i) // 打印结果为 defer2: 2
 	}()
 
 	// 规则二 defer执行顺序为先进后出
 
 	defer func() {
 		i++
-		fmt.Println("defer1:", i) // 打印结果为 defer: 1
+		fmt.Println("defer1:", i) // 打印结果为 defer1: 1
 	}()
 
 	// 规则三 defer可以读取有名返回值（函数指定了返回参数名）
@@ -192,12 +197,12 @@ func fun2() int {
 	var i int
 	defer func() {
 		i++
-		fmt.Println("defer2:", i) // 打印结果为 defer: 2
+		fmt.Println("defer2:", i) // 打印结果为 defer2: 2
 	}()
 
 	defer func() {
 		i++
-		fmt.Println("defer1:", i) // 打印结果为 defer: 1
+		fmt.Println("defer1:", i) // 打印结果为 defer1: 1
 	}()
 	return i
 }
@@ -280,8 +285,17 @@ delta := end.Sub(start)
 fmt.Printf("longCalculation took this amount of time: %s\n", delta)
 ```
 
+
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第十四章 流程控制](https://github.com/ffhelicopter/Go42/blob/master/content/42_14_flow.md)
+
+[第十六章 函数](https://github.com/ffhelicopter/Go42/blob/master/content/42_16_function.md)
+
+
+
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com

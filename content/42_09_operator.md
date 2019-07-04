@@ -38,9 +38,9 @@ Go语言的逻辑运算符：
 
 |运算符|操作|含义|
 |:--|:--|:--|
-|&&	|逻辑与|如果两边的操作数都是 True，则条件 True，否则为 False。|
-|&#124;&#124;|逻辑或| 如果两边的操作数有一个 True，则条件 True，否则为 False。|
-|!	|逻辑非|如果条件为 True，则逻辑 NOT 条件 False，否则为 True。 |
+|&&	|逻辑与|如果两边的操作数都是 True，则条件 True，否则为 False|
+|&#124;&#124;|逻辑或| 如果两边的操作数有一个 True，则条件 True，否则为 False|
+|!	|逻辑非|如果条件为 True，则逻辑 NOT 条件 False，否则为 True |
 
 Go语言的位运算符：
 
@@ -150,7 +150,8 @@ a &^= b
 
 对于整数和浮点数，你可以使用一元运算符 ++（递增）和 --（递减），但只能用于后缀：
 
-i++ -> i += 1 -> i = i + 1<br>
+i++ -> i += 1 -> i = i + 1
+
 i-- -> i -= 1 -> i = i - 1
 
 同时，带有 ++ 和 -- 的只能作为语句，而非表达式，因此 n = i++ 这种写法是无效的。
@@ -161,8 +162,16 @@ i-- -> i -= 1 -> i = i - 1
 
 
 
+[目录](https://github.com/ffhelicopter/Go42/blob/master/SUMMARY.md)
+
+[第八章 Go项目开发与编译](https://github.com/ffhelicopter/Go42/blob/master/content/42_08_project.md)
+
+[第十章 string](https://github.com/ffhelicopter/Go42/blob/master/content/42_10_string.md)
+
+
+
 >本书《Go语言四十二章经》内容在github上同步地址：https://github.com/ffhelicopter/Go42
->本书《Go语言四十二章经》内容在简书同步地址：  https://www.jianshu.com/nb/29056963
+>
 >
 >虽然本书中例子都经过实际运行，但难免出现错误和不足之处，烦请您指出；如有建议也欢迎交流。
 >联系邮箱：roteman@163.com
